@@ -5,6 +5,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -23,7 +24,9 @@ public class LoggedOutTests {
     @BeforeAll
     static void setUp() {
         System.setProperty("webdriver.gecko.driver", "C:/SeleniumDrivers/geckodriver.exe");
+        System.setProperty("webdriver.chrome.driver", "C:/SeleniumDrivers/chromedriver.exe");
         driver = new FirefoxDriver();
+//        driver = new ChromeDriver();
         driver.manage().window().maximize();
     }
 
@@ -174,49 +177,20 @@ public class LoggedOutTests {
                 driver.findElements(By.xpath("//div[@class='content-section']/div/a"));
 
         String oldUrl = driver.getCurrentUrl();
+        String oldHandle = driver.getWindowHandle();
 
         for (WebElement webElement : toVisit) {
             webElement.click();
 
             Object[] handles = driver.getWindowHandles().toArray();
+            String curHandle = oldHandle.equals(handles[0]) ? (String)handles[1] : (String)handles[0];
 
-            driver.switchTo().window((String)handles[1]);
+            driver.switchTo().window(curHandle);
             assertNotEquals(oldUrl, driver.getCurrentUrl());
             driver.close();
-            driver.switchTo().window((String)handles[0]);
+            driver.switchTo().window(oldHandle);
         }
     }
-
-    //TODO: delete this later or fix
-//    @Test
-//    void pricingTableTest() {
-//        driver.get("https://www.ucoz.ru/pricing/");
-//
-//        new WebDriverWait(driver, 5).until(ExpectedConditions.visibilityOfElementLocated(
-//            By.xpath("//table[@class='u-tariffs-table']")
-//        ));
-//
-//        List<WebElement> rows =
-//                driver.findElements(By.xpath("//table[@class='u-tariffs-table']/tbody/tr"));
-//
-//        for (int i = 0; i < rows.size() - 1; i++) {
-//            if (!rows.get(i).isEnabled() || !rows.get(i).isDisplayed())
-//                continue;
-//            if (!rows.get(i).getAttribute("class").contains("tariffs-info"))
-//                continue;
-//
-//            System.out.println(i);
-//            rows.get(i).click();
-//            new WebDriverWait(driver, 2).until(ExpectedConditions.visibilityOf(
-//                    rows.get(i+1)
-//            ));
-//
-//            rows.get(i).click();
-//            new WebDriverWait(driver, 2).until(ExpectedConditions.invisibilityOf(
-//                    rows.get(i+1)
-//            ));
-//        }
-//    }
 
 
     @AfterAll

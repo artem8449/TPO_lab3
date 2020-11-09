@@ -77,10 +77,7 @@ public class LoginTests {
         new WebDriverWait(driver, 5).until(
                 ExpectedConditions.urlContains(websiteName)
         );
-
-//        new WebDriverWait(driver, 5).until(ExpectedConditions.visibilityOfElementLocated(
-//                By.xpath(String.format("//div[@class='mysites-list']/a[contains(text(), '%s')]", websiteName))
-//        ));
+        
     }
 
     void login() {
@@ -93,8 +90,11 @@ public class LoginTests {
 
         driver.findElement(By.xpath("//div[@class='uid-login']/a[@class='uid-btn']")).click();
 
+        String oldHandle = driver.getWindowHandle();
         Object[] handles = driver.getWindowHandles().toArray();
-        driver.switchTo().window((String)handles[1]);
+        String newHandle = oldHandle.equals(handles[0]) ? (String)handles[1] : (String)handles[0];
+
+        driver.switchTo().window(newHandle);
 
         new WebDriverWait(driver, 5).until(ExpectedConditions.visibilityOfElementLocated(
                 By.xpath("//div[@class='uid-form-field']/input[@name='email']")
@@ -107,7 +107,7 @@ public class LoginTests {
         driver.findElement(By.xpath("//form[@class='uid-form']//input[@class='uid-form-submit']"))
                 .click();
 
-        driver.switchTo().window((String)handles[0]);
+        driver.switchTo().window(oldHandle);
 
         new WebDriverWait(driver, 5).until(
                 ExpectedConditions.urlContains("https://www.ucoz.ru/createsite")
