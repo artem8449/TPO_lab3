@@ -27,8 +27,8 @@ public class LoggedOutTests {
     static void setUp() {
         System.setProperty("webdriver.gecko.driver", "C:/SeleniumDrivers/geckodriver.exe");
         System.setProperty("webdriver.chrome.driver", "C:/SeleniumDrivers/chromedriver.exe");
-        driver = new FirefoxDriver();
-       // driver = new ChromeDriver();
+    //    driver = new FirefoxDriver();
+        driver = new ChromeDriver();
         driver.manage().window().maximize();
     }
 
@@ -218,6 +218,12 @@ public class LoggedOutTests {
                 "Конструктор сайтов uKit"
         };
 
+        driver.findElement(By.xpath("//div[@id='fp-nav']/ul/li[11]/a")).click();
+
+        new WebDriverWait(driver, 10).until(ExpectedConditions.elementToBeClickable(
+                By.xpath("//div[@class='social-links']/a")
+        ));
+
         for (String name : linkNames) {
             WebElement el = driver.findElement(By.xpath(
                     String.format("//div[@class='footer-section']//a[contains(text(), '%s')]", name)));
@@ -227,7 +233,7 @@ public class LoggedOutTests {
     }
 
     @Test
-    void footerSocialLinksTest() throws AWTException {
+    void footerSocialLinksTest() {
         Map<String, String> socialNetworks = new HashMap<>();
         socialNetworks.put("vk", "vk.com");
         socialNetworks.put("ok", "ok.ru");
@@ -236,14 +242,11 @@ public class LoggedOutTests {
 
         driver.get("https://www.ucoz.ru/");
 
-        Robot robot = new Robot();
-        robot.keyPress(KeyEvent.VK_DOWN);
+        driver.findElement(By.xpath("//div[@id='fp-nav']/ul/li[11]/a")).click();
 
         new WebDriverWait(driver, 10).until(ExpectedConditions.elementToBeClickable(
                 By.xpath("//div[@class='social-links']/a")
         ));
-
-        robot.keyRelease(KeyEvent.VK_DOWN);
 
         for (String key : socialNetworks.keySet()) {
             driver.findElement(By.xpath(

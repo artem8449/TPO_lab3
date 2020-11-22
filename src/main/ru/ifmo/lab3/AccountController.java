@@ -129,9 +129,7 @@ public class AccountController {
         driver.findElement(By.xpath("//button[text()='Продолжить']"))
                 .click();
 
-        new WebDriverWait(driver, 10).until(ExpectedConditions.visibilityOfElementLocated(
-                By.xpath("//h3[contains(text(), 'Добро пожаловать в Панель управления')]")
-        ));
+        new WebDriverWait(driver, 10).until(ExpectedConditions.urlMatches(".*/panel.*"));
     }
 
     public static String getAnyCreatedWebsite(WebDriver driver) {

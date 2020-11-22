@@ -17,7 +17,9 @@ public class LoginTests {
     @BeforeEach
     void setUp() {
         System.setProperty("webdriver.gecko.driver", "C:/SeleniumDrivers/geckodriver.exe");
+        System.setProperty("webdriver.chrome.driver", "C:/SeleniumDrivers/chromedriver.exe");
         driver = new FirefoxDriver();
+        // driver = new ChromeDriver();
         driver.manage().window().maximize();
     }
 
