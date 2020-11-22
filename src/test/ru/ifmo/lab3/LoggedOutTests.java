@@ -14,7 +14,9 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -26,7 +28,7 @@ public class LoggedOutTests {
         System.setProperty("webdriver.gecko.driver", "C:/SeleniumDrivers/geckodriver.exe");
         System.setProperty("webdriver.chrome.driver", "C:/SeleniumDrivers/chromedriver.exe");
         driver = new FirefoxDriver();
-//        driver = new ChromeDriver();
+       // driver = new ChromeDriver();
         driver.manage().window().maximize();
     }
 
@@ -192,6 +194,67 @@ public class LoggedOutTests {
         }
     }
 
+    @Test
+    void footerTest() {
+        driver.get("https://www.ucoz.ru/");
+
+        String[] linkNames = new String[] {
+                "Все проекты",
+                "Тур по системе",
+                "Обратная связь",
+                "Примеры сайтов",
+                "Вопросы",
+                "База знаний",
+                "Учебник uCoz",
+                "Сайт под ключ",
+                "Форма для жалоб",
+                "Конфиденциальность",
+                "Условия использования",
+                "Юридическая информация",
+                "Договор с держателем карты",
+                "Блог",
+                "Форум",
+                "Конструктор лид-форм",
+                "Конструктор сайтов uKit"
+        };
+
+        for (String name : linkNames) {
+            WebElement el = driver.findElement(By.xpath(
+                    String.format("//div[@class='footer-section']//a[contains(text(), '%s')]", name)));
+            assertTrue(el.isDisplayed());
+            assertNotNull(el.getAttribute("href"));
+        }
+    }
+
+    @Test
+    void footerSocialLinksTest() throws AWTException {
+        Map<String, String> socialNetworks = new HashMap<>();
+        socialNetworks.put("vk", "vk.com");
+        socialNetworks.put("ok", "ok.ru");
+        socialNetworks.put("facebook", "facebook.com");
+        socialNetworks.put("twitter", "twitter.com");
+
+        driver.get("https://www.ucoz.ru/");
+
+        Robot robot = new Robot();
+        robot.keyPress(KeyEvent.VK_DOWN);
+
+        new WebDriverWait(driver, 10).until(ExpectedConditions.elementToBeClickable(
+                By.xpath("//div[@class='social-links']/a")
+        ));
+
+        robot.keyRelease(KeyEvent.VK_DOWN);
+
+        for (String key : socialNetworks.keySet()) {
+            driver.findElement(By.xpath(
+                    String.format("//div[@class='social-links']/a[@class='%s']", key)))
+                    .click();
+            WindowManagement.switchToOtherWindow(driver);
+            new WebDriverWait(driver, 4).until(
+                    ExpectedConditions.urlContains(socialNetworks.get(key)));
+            WindowManagement.closeCurrentWindow(driver);
+        }
+    }
 
     @AfterAll
     static void tearDown() {

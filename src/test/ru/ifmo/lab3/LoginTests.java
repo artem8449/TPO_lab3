@@ -2,18 +2,12 @@ package ru.ifmo.lab3;
 
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,7 +23,7 @@ public class LoginTests {
 
     @Test
     void loginLogoutTest() {
-        login();
+        AccountController.login(driver);
         assertTrue(driver.getCurrentUrl().startsWith("https://www.ucoz.ru/createsite"));
 
         driver.findElement(By.xpath("//div[@class='nav-button']/a")).click();
@@ -42,45 +36,30 @@ public class LoginTests {
     }
 
     @Test
-    void createWebsiteTest() throws AWTException {
-        login();
+    void loginIncorrectEmailTest() {
+        tryLogin("lalala", "nanana");
 
         new WebDriverWait(driver, 5).until(ExpectedConditions.visibilityOfElementLocated(
-                By.xpath("//div[@class='create-form']")
+                By.xpath("//div[@id='form-error']")
         ));
-
-        String websiteName = "test" + UUID.randomUUID().toString().replace("-", "").substring(0, 10);
-        driver.findElement(By.xpath("//div[@class='create-form']/form//input[@name='addr']"))
-                .sendKeys(websiteName);
-
-        driver.findElement(By.xpath("//div[@class='SumoSelect']")).click();
-        new WebDriverWait(driver, 1).until(ExpectedConditions.visibilityOfElementLocated(
-                By.xpath("//ul[@class='options']")
-        ));
-        List<WebElement> elements = driver.findElements(By.xpath("//ul[@class='options']/li"));
-        int index = new Random().nextInt(elements.size());
-
-        Robot robot = new Robot();
-        robot.keyPress(KeyEvent.VK_DOWN);
-
-        new WebDriverWait(driver, 2).until(ExpectedConditions.visibilityOf(
-                elements.get(index)
-        ));
-
-        robot.keyRelease(KeyEvent.VK_DOWN);
-
-        elements.get(index).click();
-
-        driver.findElement(By.xpath("//div[@class='check-agree']/label/span")).click();
-        driver.findElement(By.xpath("//div[@class='create-form']/form/button")).click();
-
-        new WebDriverWait(driver, 5).until(
-                ExpectedConditions.urlContains(websiteName)
-        );
-        
     }
 
-    void login() {
+    @Test
+    void loginIncorrectPasswordTest() {
+        tryLogin(Constants.TEST_ACCOUNT_EMAIL, "notmypassword");
+
+        new WebDriverWait(driver, 5).until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//div[@id='form-error']")
+        ));
+    }
+
+    @Test
+    void createWebsiteTest() throws AWTException {
+        AccountController.createWebsite(driver);
+        //if WebDriverWait on createWebsite throw exception then test fail
+    }
+
+    void tryLogin(String email, String password) {
         driver.get("https://www.ucoz.ru/");
         driver.findElement(By.xpath("//div[@class='login-logout']/a")).click();
 
@@ -101,21 +80,30 @@ public class LoginTests {
         ));
 
         driver.findElement(By.xpath("//div[@class='uid-form-field']/input[@name='email']"))
-                .sendKeys("artem844499@yandex.ru");
+                .sendKeys(email);
         driver.findElement(By.xpath("//div[@class='uid-form-field']/input[@type='password']"))
-                .sendKeys("Fhntv8449");
+                .sendKeys(password);
         driver.findElement(By.xpath("//form[@class='uid-form']//input[@class='uid-form-submit']"))
                 .click();
+    }
 
-        driver.switchTo().window(oldHandle);
-
-        new WebDriverWait(driver, 5).until(
-                ExpectedConditions.urlContains("https://www.ucoz.ru/createsite")
-        );
+    @Test
+    void adminPanelLoginIncorrectTest() {
+        driver.get("http://test834bda6dfa.do.am/admin");
 
         new WebDriverWait(driver, 5).until(ExpectedConditions.visibilityOfElementLocated(
-                By.xpath("//h3[text()='Создание нового сайта']"))
-        );
+                By.xpath("//input[@type='password']")
+        ));
+        driver.findElement(By.xpath("//input[@type='password']"))
+                .sendKeys("fakepassword");
+        driver.findElement(By.xpath("//button[text()='Вход']"))
+                .click();
+
+        new WebDriverWait(driver, 5).until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//span[@class='myWinError']")
+        ));
+        assertEquals("Неправильный логин или пароль",
+                driver.findElement(By.xpath("//span[@class='myWinError']")).getText());
     }
 
     @AfterEach
