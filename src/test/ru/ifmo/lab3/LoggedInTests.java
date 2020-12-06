@@ -83,6 +83,9 @@ public class LoggedInTests {
     @Test
     void activateDeactivateBlogTest() {
         ensureAtPage(panelUrl);
+        new WebDriverWait(driver, 4).until(ExpectedConditions.presenceOfElementLocated(
+                By.xpath("//div[@id='uninstMods']")
+        ));
         WebElement inactiveTab = driver.findElement(By.xpath("//div[@id='uninstMods']"));
         if (inactiveTab.getAttribute("class").equals("MnotActive"))
             inactiveTab.click();
@@ -211,7 +214,7 @@ public class LoggedInTests {
             FileManager.uploadFile(driver, getTestFilePath());
 
         WebElement renameBtn = driver.findElement(By.xpath(
-                "//table//tr[@class='new']/td[1]/a[text()='Cat.bmp']/../../td[4]/i[contains(@class,'ufm-rename')]"));
+                "//table//tr/td[1]/a[text()='Cat.bmp']/../../td[4]/i[contains(@class,'ufm-rename')]"));
 
         renameBtn.click();
         WebElement input = renameBtn.findElement(By.xpath("./../../td[1]/input"));
@@ -378,5 +381,10 @@ public class LoggedInTests {
     @AfterAll
     static void tearDown() {
         driver.quit();
+    }
+
+    @AfterEach
+    void afterEach() throws InterruptedException {
+        Thread.sleep(1000);
     }
 }

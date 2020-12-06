@@ -104,8 +104,11 @@ public class LoginTests {
         new WebDriverWait(driver, 5).until(ExpectedConditions.visibilityOfElementLocated(
                 By.xpath("//span[@class='myWinError']")
         ));
-        assertEquals("Неправильный логин или пароль",
-                driver.findElement(By.xpath("//span[@class='myWinError']")).getText());
+
+        String errorText = driver.findElement(By.xpath("//span[@class='myWinError']")).getText();
+        assertTrue(
+                errorText.equals("Неправильный логин или пароль") ||
+                        errorText.equals("Неправильный код безопасности"));
     }
 
     @AfterEach

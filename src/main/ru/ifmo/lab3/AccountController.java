@@ -88,12 +88,12 @@ public class AccountController {
                 By.xpath("//ul[@class='options']")
         ));
         List<WebElement> elements = driver.findElements(By.xpath("//ul[@class='options']/li"));
-        int index = new Random().nextInt(elements.size());
+        int index = new Random().nextInt(6);
 
         Robot robot = new Robot();
         robot.keyPress(KeyEvent.VK_DOWN);
 
-        new WebDriverWait(driver, 2).until(ExpectedConditions.visibilityOf(
+        new WebDriverWait(driver, 2).until(ExpectedConditions.elementToBeClickable(
                 elements.get(index)
         ));
 
@@ -133,7 +133,7 @@ public class AccountController {
     }
 
     public static String getAnyCreatedWebsite(WebDriver driver) {
-        int websiteId = 3;
+        int websiteId = 4;
 
         if (!driver.getCurrentUrl().matches("https://www.ucoz.ru/createsite"))
             driver.get("https://www.ucoz.ru/createsite");
